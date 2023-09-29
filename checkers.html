@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkers Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            gap: 2px;
+            width: 480px;
+            margin: 0 auto;
+        }
+        
+        .square {
+            width: 60px;
+            height: 60px;
+            background-color: #f0d9b5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .piece {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="board" id="board"></div>
+    
+    <script>
+        // Function to create a checkerboard pattern
+        function createCheckerboard() {
+            const board = document.getElementById("board");
+            let isWhiteSquare = true;
+
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    const square = document.createElement("div");
+                    square.className = "square";
+                    square.dataset.row = i;
+                    square.dataset.col = j;
+
+                    if (isWhiteSquare) {
+                        square.style.backgroundColor = "#f0d9b5";
+                    } else {
+                        square.style.backgroundColor = "#b58863";
+                    }
+
+                    isWhiteSquare = !isWhiteSquare;
+
+                    board.appendChild(square);
+                }
+                isWhiteSquare = !isWhiteSquare;
+            }
+        }
+
+        // Function to add draggable pieces
+        function createPieces() {
+            const squares = document.querySelectorAll(".square");
+
+            squares.forEach(square => {
+                if (square.dataset.row < 3 && (parseInt(square.dataset.row) + parseInt(square.dataset.col)) % 2 === 1) {
+                    const piece = document.createElement("div");
+                    piece.className = "piece";
+                    piece.style.backgroundColor = "red";
+                    square.appendChild(piece);
+                    makeDraggable(piece, square);
+                }
+
+                if (square.dataset.row > 4 && (parseInt(square.dataset.row) + parseInt(square.dataset.col)) % 2 === 1) {
+                    const piece = document.createElement("div");
+                    piece.className = "piece";
+                    piece.style.backgroundColor = "black";
+                    square.appendChild(piece);
+                    makeDraggable(piece, square);
+                }
+            });
+        }
+
+        // Make pieces draggable within their square
+        function makeDraggable(piece, square) {
+            let isDragging = false;
+            let xOffset, yOffset;
+
+            piece.addEventListener("mousedown", (e) => {
+                isDragging = true;
+                const rect = square.getBoundingClientRect();
+                xOffset = e.clientX - rect.left;
+                yOffset = e.clientY - rect.top;
+                piece.style.zIndex = 1;
+            });
+
+            window.addEventListener("mousemove", (e) => {
+                if (!isDragging) return;
+                const x = e.clientX - square.getBoundingClientRect().left - xOffset;
+                const y = e.clientY - square.getBoundingClientRect().top - yOffset;
+                piece.style.transform = `translate(${x}px, ${y}px)`;
+            });
+
+            window.addEventListener("mouseup", () => {
+                if (!isDragging) return;
+                isDragging = false;
+                piece.style.zIndex = 0;
+            });
+        }
+
+        // Initialize the game
+        createCheckerboard();
+        createPieces();
+    </script>
+</body>
+</html>
+
+
+
+
